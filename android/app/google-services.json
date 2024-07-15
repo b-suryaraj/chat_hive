@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81728778696",
+    "project_id": "chathive-9d484",
+    "storage_bucket": "chathive-9d484.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81728778696:android:72a8f64d7a1dfd8a3010fd",
+        "android_client_info": {
+          "package_name": "com.example.chat_hive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5G0m5cwClPToeVTSYxabwz4EadQqM710"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
