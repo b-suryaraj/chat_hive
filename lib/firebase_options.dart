@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '81728778696',
     projectId: 'chathive-9d484',
     storageBucket: 'chathive-9d484.appspot.com',
+    androidClientId: '81728778696-bqo6eqbe9p06li48gabg9a2kgc2bmc77.apps.googleusercontent.com',
+    iosClientId: '81728778696-gk05i51no5ksl48muu8ee8mkr0qjcuj7.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatHive',
   );
+
 }

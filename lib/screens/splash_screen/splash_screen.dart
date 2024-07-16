@@ -1,6 +1,9 @@
+import 'dart:developer';
+
+import 'package:chat_hive/api/apis.dart';
 import 'package:chat_hive/main.dart';
 import 'package:chat_hive/screens/auth/login_screen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:chat_hive/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,8 +27,17 @@ class _SplashScreenState extends State<SplashScreen>
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent)
       );
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-    });
+      if(APIs.auth.currentUser != null){
+        log('\nUser: ${APIs.auth.currentUser}');
+
+        Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      }else{
+        Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      }
+
+      });
   }
 
   @override
@@ -49,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
         Positioned(
             bottom: mq.height * .15,
             width: mq.width,
-            child: const Text('Hello, Konichiwa!',
+            child: const Text('Hello, Konichiwa!👋',
             textAlign : TextAlign.center,
             style:TextStyle(
               fontSize: 16, color: Colors.black87,letterSpacing:.5
