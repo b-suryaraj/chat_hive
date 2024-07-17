@@ -14,7 +14,7 @@ class Dialogs {
       builder: (_) => Center(
         child: CircularProgressIndicator(
           strokeWidth: 4,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple.withOpacity(.8)),
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple.withOpacity(.9)),
           backgroundColor: Colors.white, 
           semanticsLabel: 'Loading...', 
           semanticsValue: 'Loading', 
