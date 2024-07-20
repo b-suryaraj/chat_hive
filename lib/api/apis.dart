@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_hive/models/chat_user.dart';
+import 'package:chat_hive/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -113,9 +114,55 @@ class APIs {
         .doc(user.uid)
         .update({'image': me.image});
 
-    log('Profile picture updated successfully!');
-  } catch (e) {
-    log('Error updating profile picture: $e');
+      log('Profile picture updated successfully!');
+    } catch (e) {
+      log('Error updating profile picture: $e');
+    }
   }
-}
+
+  ///******** chat Screen ********/
+  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
+      ? '${user.uid}_$id'
+      : '${id}_${user.uid}';
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(ChatUser user) {
+    return firestore
+        .collection('chats/${getConversationID(user.id)}/messages/')
+        .orderBy('sent', descending: true)
+        .snapshots();
+  }
+  static Future<void> sendMessage(
+    ChatUser chatUser, String msg) async {
+    //message sending time (also used as id)
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    //message to send
+    final Message message = Message(
+        toid: chatUser.id,
+        msg: msg,
+        read: '',
+        type: Type.text,
+        fromid: user.uid,
+        sent: time);
+
+    final ref = firestore
+        .collection('chats/${getConversationID(chatUser.id)}/messages/');
+    await ref.doc(time).set(message.toJson());
+  }
+
+  static Future<void> updateMessageReadStatus(Message message) async{
+    firestore
+      .collection('chats/${getConversationID(message.fromid)}/messages/')
+      .doc(message.sent)
+      .update({'read' : DateTime.now().millisecondsSinceEpoch.toString()});
+  }
+
+   static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(ChatUser user) {
+    return firestore
+        .collection('chats/${getConversationID(user.id)}/messages/')
+        .orderBy('sent', descending: true)
+        .limit(1)
+        .snapshots();
+  }
+
 }
