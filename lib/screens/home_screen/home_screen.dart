@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_hive/api/apis.dart';
 import 'package:chat_hive/main.dart';
 import 'package:chat_hive/models/chat_user.dart';
@@ -5,6 +7,7 @@ import 'package:chat_hive/screens/profile_screen/profile_screen.dart';
 import 'package:chat_hive/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +27,21 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     APIs.getSelfInfo();
+    APIs.updateActiveStatus(true);
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      log('Message : $message');
+      
+      if(APIs.auth.currentUser!=null){
+        if(message.toString().contains('pause')) {
+          APIs.updateActiveStatus(false);
+        }
+        if(message.toString().contains('resume')) {
+          APIs.updateActiveStatus(true);
+        }
+      }
+      
+      return Future.value(message);
+    });
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:chat_hive/helper/dialog.dart';
 import 'package:chat_hive/main.dart';
 import 'package:chat_hive/models/chat_user.dart';
 import 'package:chat_hive/screens/auth/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -67,11 +68,16 @@ String? _image;
                   backgroundColor: Colors.redAccent,
                   onPressed: () async{
                     Dialogs.showProgressBar(context);
+
+                    await APIs.updateActiveStatus(false);
       
                     await APIs.auth.signOut().then((value) async {
                       await GoogleSignIn().signOut().then((value) {
                         Navigator.pop(context);
                         Navigator.pop(context);
+
+                        APIs.auth = FirebaseAuth.instance;
+
                         Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (_) => const LoginScreen()));
                       });
