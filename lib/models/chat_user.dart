@@ -16,7 +16,7 @@ class ChatUser {
   late bool isOnline;
   late String id;
   late String lastActive;
-  late String about ;
+  late String about;
   late String pushToken;
   late String email;
   
@@ -27,7 +27,7 @@ class ChatUser {
     isOnline = json['is_online'] ?? '';
     id = json['id'] ?? '';
     lastActive = json['last_active'] ?? '';
-    about  = json['about '] ?? '';
+    about  = json['about'] ?? '';
     pushToken = json['push_token'] ?? '';
     email = json['email'] ?? '';
   }
@@ -40,7 +40,7 @@ class ChatUser {
     data['is_online'] = isOnline;
     data['id'] = id;
     data['last_active'] = lastActive;
-    data['about '] = about ;
+    data['about'] = about ;
     data['push_token'] = pushToken;
     data['email'] = email;
     return data;
