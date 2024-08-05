@@ -4,6 +4,7 @@ import 'package:chat_hive/helper/my_date_util.dart';
 import 'package:chat_hive/main.dart';
 import 'package:chat_hive/models/chat_user.dart';
 import 'package:chat_hive/models/message.dart';
+import 'package:chat_hive/models/profile_dialog.dart';
 import 'package:chat_hive/screens/chat_screen/chat_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,14 +46,19 @@ class _ChatUserCardState extends State<ChatUserCard>{
 
              return ListTile(
 
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * 0.3),
-                child: CachedNetworkImage(
-                  height: mq.height*.055,
-                  width:mq.height*.055,
-                  imageUrl:widget.user.image,
-                  fit: BoxFit.cover,
-                  errorWidget: (context, url, error) => CircleAvatar(child:Icon(CupertinoIcons.person)),
+              leading: InkWell(
+                onTap: (){
+                  showDialog(context: context, builder:(_)=>ProfileDialog(user : widget.user));
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * 0.3),
+                  child: CachedNetworkImage(
+                    height: mq.height*.055,
+                    width:mq.height*.055,
+                    imageUrl:widget.user.image,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => CircleAvatar(child:Icon(CupertinoIcons.person)),
+                  ),
                 ),
               ),
               title : Text(widget.user.name),
