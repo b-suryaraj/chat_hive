@@ -1,11 +1,20 @@
+
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
+import 'package:chat_hive/api/access_firebase_token.dart';
 
 import 'package:chat_hive/models/chat_user.dart';
 import 'package:chat_hive/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart';
+
+
 
 class APIs {
   static FirebaseAuth auth = FirebaseAuth.instance;
@@ -16,7 +25,62 @@ class APIs {
   
   static late ChatUser me;
   static User get user => auth.currentUser!;
-  
+
+
+  static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
+
+  static Future<void> getFirebaseMessagingToken() async {
+    await fMessaging.requestPermission();
+
+    await fMessaging.getToken().then((t) {
+      if (t != null) {
+        me.pushToken = t;
+        log('Push Token: $t');
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Got a message whilst in the foreground!');
+      log('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        log('Message also contained a notification: ${message.notification}');
+      }
+    });
+  }
+
+  static Future<void> sendPushNotification(ChatUser chatUser, String msg) async {
+    AccessFirebaseToken accessToken = AccessFirebaseToken();
+    String bearerToken = await accessToken.getAccessToken();
+    final body = {
+    
+      "message": {
+        "token": chatUser.pushToken,
+        "notification": {
+          "title": me.name,
+          "body": msg,
+          "android_channel_id": "chats",
+        },
+        "data": {
+          "some_data" : "User Id : ${me.id}",
+        },
+      }
+    };
+    try {
+      var res = await post(
+      Uri.parse('https://fcm.googleapis.com/v1/projects/chathive-9d484/messages:send'),
+      headers: {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $bearerToken'
+      },
+      body: jsonEncode(body),
+      );
+      log("Response statusCode: ${res.statusCode}");
+      log("Response body: ${res.body}");
+    }catch (e) {
+      log("\nsendPushNotification: $e");
+    }
+  }
 
   static Future<bool> userExists() async {
     return (await firestore.collection('users').doc(user.uid).get()).exists;
@@ -26,6 +90,10 @@ class APIs {
     await firestore.collection('users').doc(user.uid).get().then((user) async {
       if (user.exists) {
         me = ChatUser.fromJson(user.data()!);
+
+        await getFirebaseMessagingToken();
+
+        APIs.updateActiveStatus(true);
 
         log('My Data: ${user.data()}');
 
@@ -84,7 +152,9 @@ class APIs {
     firestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
       'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
-      // 'push_token': me.pushToken,
+
+      'push_token': me.pushToken,
+
     });
   }
 
@@ -145,7 +215,10 @@ class APIs {
 
     final ref = firestore
         .collection('chats/${getConversationID(chatUser.id)}/messages/');
-    await ref.doc(time).set(message.toJson());
+
+    await ref.doc(time).set(message.toJson()).then((value) =>
+        sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
+
   }
 
   static Future<void> updateMessageReadStatus(Message message) async{
@@ -178,6 +251,25 @@ class APIs {
 
     final imageUrl = await ref.getDownloadURL();
     await sendMessage(chatUser, imageUrl, Type.image);
+  }
+
+
+  static Future<void> deleteMessage(Message message) async {
+    await firestore
+        .collection('chats/${getConversationID(message.toid)}/messages/')
+        .doc(message.sent)
+        .delete();
+
+    if (message.type == Type.image) {
+      await storage.refFromURL(message.msg).delete();
+    }
+  }
+
+  static Future<void> updateMessage(Message message, String updatedMsg) async {
+    await firestore
+        .collection('chats/${getConversationID(message.toid)}/messages/')
+        .doc(message.sent)
+        .update({'msg':updatedMsg});
   }
 
 }
