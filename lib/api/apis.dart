@@ -1,15 +1,20 @@
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_hive/api/access_firebase_token.dart';
+
 import 'package:chat_hive/models/chat_user.dart';
 import 'package:chat_hive/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart';
+
+
 
 class APIs {
   static FirebaseAuth auth = FirebaseAuth.instance;
@@ -20,6 +25,7 @@ class APIs {
   
   static late ChatUser me;
   static User get user => auth.currentUser!;
+
 
   static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
 
@@ -84,9 +90,11 @@ class APIs {
     await firestore.collection('users').doc(user.uid).get().then((user) async {
       if (user.exists) {
         me = ChatUser.fromJson(user.data()!);
+
         await getFirebaseMessagingToken();
 
         APIs.updateActiveStatus(true);
+
         log('My Data: ${user.data()}');
 
       } else {
@@ -144,7 +152,9 @@ class APIs {
     firestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
       'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+
       'push_token': me.pushToken,
+
     });
   }
 
@@ -205,8 +215,10 @@ class APIs {
 
     final ref = firestore
         .collection('chats/${getConversationID(chatUser.id)}/messages/');
+
     await ref.doc(time).set(message.toJson()).then((value) =>
         sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
+
   }
 
   static Future<void> updateMessageReadStatus(Message message) async{
@@ -240,6 +252,7 @@ class APIs {
     final imageUrl = await ref.getDownloadURL();
     await sendMessage(chatUser, imageUrl, Type.image);
   }
+
 
   static Future<void> deleteMessage(Message message) async {
     await firestore

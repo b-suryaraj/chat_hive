@@ -280,6 +280,7 @@ packages:
       sha256: c5a6443e66ae064fe186901d740ee7ce648ca2a6fd0484b8c5e963849ac0fc28
       url: "https://pub.dev"
     source: hosted
+
     version: "4.5.42"
   firebase_messaging_web:
     dependency: transitive
@@ -289,6 +290,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.8.12"
+
   firebase_storage:
     dependency: "direct main"
     description:
@@ -342,6 +344,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.1"
+
   flutter_notification_channel:
     dependency: "direct main"
     description:
@@ -350,6 +353,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
+
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:

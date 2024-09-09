@@ -1,14 +1,18 @@
+
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_hive/api/apis.dart';
 import 'package:chat_hive/helper/dialog.dart';
+
 import 'package:chat_hive/helper/my_date_util.dart';
 import 'package:chat_hive/main.dart';
 import 'package:chat_hive/models/message.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+
 
 class MessageCard extends StatefulWidget {
   const MessageCard({super.key, required this.message});
@@ -22,6 +26,7 @@ class MessageCard extends StatefulWidget {
 class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
+
     bool isMe = APIs.user.uid == widget.message.fromid;
     return InkWell(
         onLongPress: () => _showBottomSheet(isMe),
@@ -143,6 +148,7 @@ class _MessageCardState extends State<MessageCard> {
       ],
     );
   }
+
 
   void _showBottomSheet(bool isMe) {
     showModalBottomSheet(
@@ -358,4 +364,5 @@ class _OptionItem extends StatelessWidget {
           ]),
         ));
   }
+
 }
